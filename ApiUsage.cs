@@ -7,9 +7,16 @@ using Environment = System.Environment;
 
 namespace GodotTask.Tests;
 
-public class ApiUsageClass
+public partial class ApiUsage : Node
 {
-	public static async GDTask ApiUsage()
+	public override void _Ready()
+	{
+		base._Ready();
+		TaskTracker.ShowTrackerWindow();
+		ApiUsage_Method().Forget();
+	}
+
+	public static async GDTask ApiUsage_Method()
 	{
 		// Delay the execution after frame(s).
 		await GDTask.DelayFrame(100); 

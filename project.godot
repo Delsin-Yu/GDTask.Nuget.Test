@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="GDTask.Tests"
-run/main_scene="res://Test.tscn"
+run/main_scene="res://Main.tscn"
 config/features=PackedStringArray("4.2", "C#")
 boot_splash/bg_color=Color(0, 0, 0, 1)
+
+[display]
+
+window/subwindows/embed_subwindows=false
 
 [dotnet]
 
