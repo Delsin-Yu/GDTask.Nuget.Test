@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
+using Godot;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedType.Global
@@ -179,6 +180,26 @@ public class GDTaskTest_Delay
     {
         await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
         using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.PhysicsProcess);
+    }
+
+    [TestCase]
+    public static async Task GDTask_Delay_DeltaTime_Isolated_Process()
+    {
+        await GDTask.NextFrame(PlayerLoopTiming.Process);
+        var tree =GDTaskPlayerLoopRunner.Global.GetTree();
+        tree.Paused = true;
+        using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.IsolatedProcess);
+        tree.Paused = false;
+    }
+
+    [TestCase]
+    public static async Task GDTask_Delay_DeltaTime_Isolated_PhysicsProcess()
+    {
+        await GDTask.NextFrame(PlayerLoopTiming.PhysicsProcess);
+        var tree =GDTaskPlayerLoopRunner.Global.GetTree();
+        tree.Paused = true;
+        using (new ScopedStopwatch()) await GDTask.Delay(Constants.DelayTimeSpan, DelayType.DeltaTime, PlayerLoopTiming.IsolatedPhysicsProcess);
+        tree.Paused = false;
     }
 
     [TestCase]
