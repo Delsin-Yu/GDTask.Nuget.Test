@@ -1,6 +1,10 @@
 [gd_scene load_steps=2 format=3 uid="uid://cfm0u7eao06ff"]
 
 [ext_resource type="Script" path="res://ApiUsage.cs" id="1_p44pf"]
+[ext_resource type="Script" path="res://EditorHintCheck.cs" id="2_0eopx"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_p44pf")
+
+[node name="EditorHintCheck" type="Node" parent="."]
+script = ExtResource("2_0eopx")
