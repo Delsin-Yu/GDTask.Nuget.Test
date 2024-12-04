@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,13 +13,26 @@ public class GDTaskTest_WhenAll_WhenAny
     [TestCase]
     public static async Task GDTask_WhenAll_Params()
     {
-        await GDTask.WhenAll(GDTask.CompletedTask, Constants.Delay());
+        await GDTask.WhenAll(new[] { GDTask.CompletedTask, Constants.Delay() });
     }
 
     [TestCase]
     public static async Task GDTask_WhenAllT_Params()
     {
         var results = await GDTask.WhenAll(new[] { Constants.DelayWithReturn(), GDTask.FromResult(Constants.ReturnValue) });
+        Assertions.AssertThat(results.All(value => value == Constants.ReturnValue));
+    }
+    
+    [TestCase]
+    public static async Task GDTask_WhenAll_ParamsSpan()
+    {
+        await GDTask.WhenAll((ReadOnlySpan<GDTask>) [GDTask.CompletedTask, Constants.Delay()]);
+    }
+
+    [TestCase]
+    public static async Task GDTask_WhenAllT_ParamsSpan()
+    {
+        var results = await GDTask.WhenAll((ReadOnlySpan<GDTask<int>>) [Constants.DelayWithReturn(), GDTask.FromResult(Constants.ReturnValue)]);
         Assertions.AssertThat(results.All(value => value == Constants.ReturnValue));
     }
 
@@ -43,19 +57,32 @@ public class GDTaskTest_WhenAll_WhenAny
         Assertions.AssertThat(resultB).IsEqual(Constants.ReturnValue);
     }   
     
-    
     [TestCase]
     public static async Task GDTask_WhenAny_Params()
     {
-        var winArgumentIndex = await GDTask.WhenAny(GDTask.Never(CancellationToken.None), Constants.Delay());
+        var winArgumentIndex = await GDTask.WhenAny(new[] { GDTask.Never(CancellationToken.None), Constants.Delay() });
         Assertions.AssertThat(winArgumentIndex).IsEqual(1);
     }
 
     [TestCase]
     public static async Task GDTask_WhenAnyT_Params()
     {
-        var tasks = new[] { Constants.DelayWithReturn(), GDTask.Never<int>(CancellationToken.None) };
-        var (winArgumentIndex, result) = await GDTask.WhenAny(tasks);
+        var (winArgumentIndex, result) = await GDTask.WhenAny(new[] { Constants.DelayWithReturn(), GDTask.Never<int>(CancellationToken.None) });
+        Assertions.AssertThat(winArgumentIndex).IsEqual(0);
+        Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
+    }
+    
+    [TestCase]
+    public static async Task GDTask_WhenAny_ParamsSpan()
+    {
+        var winArgumentIndex = await GDTask.WhenAny((ReadOnlySpan<GDTask>) [GDTask.Never(CancellationToken.None), Constants.Delay()]);
+        Assertions.AssertThat(winArgumentIndex).IsEqual(1);
+    }
+
+    [TestCase]
+    public static async Task GDTask_WhenAnyT_ParamsSpan()
+    {
+        var (winArgumentIndex, result) = await GDTask.WhenAny((ReadOnlySpan<GDTask<int>>) [Constants.DelayWithReturn(), GDTask.Never<int>(CancellationToken.None)]);
         Assertions.AssertThat(winArgumentIndex).IsEqual(0);
         Assertions.AssertThat(result).IsEqual(Constants.ReturnValue);
     }
