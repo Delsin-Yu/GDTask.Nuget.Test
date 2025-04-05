@@ -3,6 +3,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using GdUnit4;
+using Godot;
 
 namespace GodotTask.Tests;
 
@@ -33,6 +34,14 @@ public class GDTaskTest_Core
         var completed = false;
         gdTask.GetAwaiter().OnCompleted(() => completed = true);
         await GDTask.WaitUntil(() => completed);
+    }
+
+    public static async Task GDTask_GetAwaiter_Target() {
+        var godotObject = new GodotObject();
+        var gdTask = Constants.Delay();
+        gdTask.GetAwaiter().OnCompleted(() => godotObject.Free());
+        await GDTask.WaitUntil(godotObject, () => false);
+        await GDTask.WaitWhile(godotObject, () => true);
     }
 
     [TestCase]
